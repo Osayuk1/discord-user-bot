@@ -1,36 +1,24 @@
-import os
-import datetime
 from discord.ext import commands
-from keep_alive import start
+from discord import Intents
+import os
+import importlib.util
+import glob
+from keep_alive import keep_alive
 
-bot = commands.Bot(command_prefix="!", self_bot=False)
-bot.launch_time = datetime.datetime.now()
+token = os.getenv("TOKEN")
 
-start()
+bot = commands.Bot(command_prefix="!", self_bot=True)
 
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user}")
+    print(f"{bot.user} is online!")
 
-@bot.event
-async def on_command_error(ctx, error):
-    if isinstance(error, commands.MissingPermissions):
-        await ctx.reply("You don't have permission to do that.")
-    elif isinstance(error, commands.MissingRequiredArgument):
-        await ctx.reply("Missing argument.")
-    elif isinstance(error, commands.CommandNotFound):
-        pass
-    else:
-        await ctx.reply("An error occurred.")
-        print(f"Error: {error}")
+# Load cogs from commands/
+for filename in glob.glob("commands/*.py"):
+    spec = importlib.util.spec_from_file_location("module.name", filename)
+    foo = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(foo)
+    foo.setup(bot)
 
-# Load commands from commands folder
-for filename in os.listdir("./commands"):
-    if filename.endswith(".py") and filename != "__init__.py":
-        bot.load_extension(f"commands.{filename[:-3]}")
-
-token = os.getenv("TOKEN")
-if not token:
-    print("TOKEN not found in environment variables")
-else:
-    bot.run(token)
+keep_alive()
+bot.run(token)
