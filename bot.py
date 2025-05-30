@@ -1,20 +1,16 @@
-import asyncio
 import os
-from userbot import User
-
-from commands import ping, hello  # Import your commands
+import discord
+from discord.ext import commands
 import keep_alive
 
 keep_alive.start()
 
-bot = User(token=os.getenv("TOKEN"), prefix="!")
+intents = discord.Intents.default()
+bot = commands.Bot(command_prefix="!", self_bot=True, intents=intents)
 
-@bot.command("ping")
-async def _(ctx):
-    await ping.run(ctx)
+@bot.command()
+async def ping(ctx):
+    await ctx.send("Pong!")
 
-@bot.command("hello")
-async def _(ctx):
-    await hello.run(ctx)
-
-bot.run()
+TOKEN = os.getenv("TOKEN")
+bot.run(TOKEN)
