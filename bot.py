@@ -2,30 +2,42 @@ import os
 import random
 import datetime
 from discord.ext import commands
+import discord
 from keep_alive import start
 
 bot = commands.Bot(command_prefix="!", self_bot=False)
-
 bot.launch_time = datetime.datetime.now()
 
-start()  # start the Flask keep-alive server
+start()
 
 @bot.event
 async def on_ready():
     print(f"Logged in as {bot.user}")
 
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, commands.MissingPermissions):
+        await ctx.reply("You don't have permission to do that.")
+    elif isinstance(error, commands.MissingRequiredArgument):
+        await ctx.reply("Missing argument.")
+    elif isinstance(error, commands.CommandNotFound):
+        pass  # Ignore unknown commands
+    else:
+        await ctx.reply("An error occurred.")
+        print(f"Error: {error}")
+
 @bot.command()
 async def info(ctx):
     user = ctx.author
-    await ctx.reply(f"User info:\nName: {user.name}\nID: {user.id}\nCreated: {user.created_at}")
+    await ctx.reply(f"**User Info**\nName: {user.name}\nID: {user.id}\nCreated: {user.created_at}")
 
 @bot.command()
 async def serverinfo(ctx):
     guild = ctx.guild
-    await ctx.reply(f"Server info:\nName: {guild.name}\nID: {guild.id}\nMembers: {guild.member_count}")
+    await ctx.reply(f"**Server Info**\nName: {guild.name}\nID: {guild.id}\nMembers: {guild.member_count}")
 
 @bot.command()
-async def avatar(ctx, member: commands.MemberConverter = None):
+async def avatar(ctx, member: discord.Member = None):
     member = member or ctx.author
     await ctx.reply(member.avatar.url)
 
@@ -39,21 +51,20 @@ async def clear(ctx, amount: int = 5):
 async def roll(ctx, dice: str = "1d6"):
     try:
         rolls, limit = map(int, dice.lower().split('d'))
+        result = [random.randint(1, limit) for _ in range(rolls)]
+        await ctx.reply(f"🎲 Rolls: {result} Total: {sum(result)}")
     except:
-        await ctx.reply("Format has to be NdN, e.g. 2d6")
-        return
-    result = [random.randint(1, limit) for _ in range(rolls)]
-    await ctx.reply(f"Rolls: {result} Total: {sum(result)}")
+        await ctx.reply("Use format NdN (example: `2d6`)")
 
-@bot.command()
-async def help(ctx):
-    cmds = ["info", "serverinfo", "avatar", "clear", "roll", "help", "stats", "quote"]
+@bot.command(name="commands")
+async def custom_help(ctx):
+    cmds = ["info", "serverinfo", "avatar", "clear", "roll", "commands", "stats", "quote"]
     await ctx.reply("Commands: " + ", ".join(cmds))
 
 @bot.command()
 async def stats(ctx):
     uptime = datetime.datetime.now() - bot.launch_time
-    await ctx.reply(f"Bot uptime: {str(uptime).split('.')[0]}")
+    await ctx.reply(f"Uptime: {str(uptime).split('.')[0]}")
 
 @bot.command()
 async def quote(ctx):
@@ -66,6 +77,7 @@ async def quote(ctx):
     await ctx.reply(random.choice(quotes))
 
 token = os.getenv("TOKEN")
-print(f'TOKEN: "{token[:5]}..."' if token else "No token found")
-
-bot.run(token)
+if not token:
+    print("TOKEN not found in environment variables")
+else:
+    bot.run(token)
