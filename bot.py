@@ -1,35 +1,28 @@
-
-import os
-import discord
 from discord.ext import commands
-from keepalive_server import keep_alive
+import os
+import glob
 import importlib.util
-import pathlib
+import asyncio
+from keepalive_server import keep_alive  # updated import
 
 token = os.getenv("TOKEN")
 
-intents = discord.Intents.default()
-intents.message_content = True
-bot = commands.Bot(command_prefix="!", intents=intents)
+bot = commands.Bot(command_prefix="!", self_bot=True)
 
 @bot.event
 async def on_ready():
-    print(f"Logged in as {bot.user}")
-    print(f"ID: {bot.user.id}")
+    print(f"{bot.user} is online!")
 
-# Load all command cogs
-commands_dir = pathlib.Path("commands")
-for file in commands_dir.glob("*.py"):
-    if file.name.startswith("_"):
-        continue
-    spec = importlib.util.spec_from_file_location(file.stem, file)
-    mod = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(mod)
-    if hasattr(mod, "setup"):
-        bot.loop.create_task(mod.setup(bot))
+async def load_cogs():
+    for filename in glob.glob("commands/*.py"):
+        spec = importlib.util.spec_from_file_location("module.name", filename)
+        mod = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(mod)
+        await mod.setup(bot)
 
-# Keep alive
-keep_alive()
+async def main():
+    await load_cogs()
+    keep_alive()
+    await bot.start(token)
 
-# Start bot
-bot.run(token)
+asyncio.run(main())
