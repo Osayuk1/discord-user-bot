@@ -3,7 +3,7 @@ import discord
 from discord.ext import commands
 from keep_alive import start
 
-start()
+start()  # keep_alive for UptimeRobot
 
 bot = commands.Bot(command_prefix="!", self_bot=True)
 
@@ -15,4 +15,7 @@ async def on_ready():
 async def ping(ctx):
     await ctx.reply("Pong!")
 
-bot.run(os.getenv("TOKEN"))
+token = os.getenv("TOKEN")
+print("TOKEN:", token[:5] + "..." if token else "No token found")
+
+bot.run(token)
