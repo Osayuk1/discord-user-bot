@@ -5,10 +5,9 @@ class Clear(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    @commands.has_permissions(manage_messages=True)
     async def clear(self, ctx, amount: int = 5):
         await ctx.channel.purge(limit=amount)
-        await ctx.send(f"Deleted {amount} messages", delete_after=5)
+        await ctx.send(f"Cleared {amount} messages.", delete_after=2)
 
-def setup(bot):
-    bot.add_cog(Clear(bot))
+async def setup(bot):
+    await bot.add_cog(Clear(bot))

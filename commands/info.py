@@ -6,8 +6,7 @@ class Info(commands.Cog):
 
     @commands.command()
     async def info(self, ctx):
-        user = ctx.author
-        await ctx.reply(f"**User Info**\nName: {user.name}\nID: {user.id}\nCreated: {user.created_at}")
+        await ctx.send(f"Logged in as {ctx.author}")
 
-def setup(bot):
-    bot.add_cog(Info(bot))
+async def setup(bot):
+    await bot.add_cog(Info(bot))

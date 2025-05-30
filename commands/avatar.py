@@ -5,12 +5,9 @@ class Avatar(commands.Cog):
         self.bot = bot
 
     @commands.command()
-    async def avatar(self, ctx, member=None):
-        member = member or ctx.author
-        try:
-            await ctx.reply(member.avatar.url)
-        except AttributeError:
-            await ctx.reply("Could not fetch avatar.")
+    async def avatar(self, ctx, user=None):
+        user = user or ctx.author
+        await ctx.send(user.avatar.url)
 
-def setup(bot):
-    bot.add_cog(Avatar(bot))
+async def setup(bot):
+    await bot.add_cog(Avatar(bot))

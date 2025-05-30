@@ -7,7 +7,7 @@ class ServerInfo(commands.Cog):
     @commands.command()
     async def serverinfo(self, ctx):
         guild = ctx.guild
-        await ctx.reply(f"**Server Info**\nName: {guild.name}\nID: {guild.id}\nMembers: {guild.member_count}")
+        await ctx.send(f"Server name: {guild.name}\nMembers: {guild.member_count}")
 
-def setup(bot):
-    bot.add_cog(ServerInfo(bot))
+async def setup(bot):
+    await bot.add_cog(ServerInfo(bot))

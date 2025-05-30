@@ -1,15 +1,13 @@
 from discord.ext import commands
-import datetime
+import platform
 
 class Stats(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
-        self.bot.launch_time = datetime.datetime.now()
 
     @commands.command()
     async def stats(self, ctx):
-        uptime = datetime.datetime.now() - self.bot.launch_time
-        await ctx.reply(f"Uptime: {str(uptime).split('.')[0]}")
+        await ctx.send(f"Python version: {platform.python_version()}")
 
-def setup(bot):
-    bot.add_cog(Stats(bot))
+async def setup(bot):
+    await bot.add_cog(Stats(bot))

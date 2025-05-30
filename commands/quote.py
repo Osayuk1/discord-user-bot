@@ -1,5 +1,11 @@
-from discord.ext import commands
 import random
+from discord.ext import commands
+
+quotes = [
+    "The best way to get started is to quit talking and begin doing.",
+    "Don’t let yesterday take up too much of today.",
+    "It’s not whether you get knocked down, it’s whether you get up.",
+]
 
 class Quote(commands.Cog):
     def __init__(self, bot):
@@ -7,13 +13,7 @@ class Quote(commands.Cog):
 
     @commands.command()
     async def quote(self, ctx):
-        quotes = [
-            "Stay hungry, stay foolish. — Steve Jobs",
-            "Be yourself; everyone else is already taken. — Oscar Wilde",
-            "Simplicity is the ultimate sophistication. — Leonardo da Vinci",
-            "The only limit to our realization of tomorrow is our doubts of today. — FDR"
-        ]
-        await ctx.reply(random.choice(quotes))
+        await ctx.send(random.choice(quotes))
 
-def setup(bot):
-    bot.add_cog(Quote(bot))
+async def setup(bot):
+    await bot.add_cog(Quote(bot))
