@@ -3,11 +3,9 @@ import discord
 from discord.ext import commands
 from keep_alive import start
 
-start()  # keep_alive for UptimeRobot
+start()
 
-intents = discord.Intents.all()
-
-bot = commands.Bot(command_prefix="!", self_bot=True, intents=intents)
+bot = commands.Bot(command_prefix="!", self_bot=True)
 
 @bot.event
 async def on_ready():
