@@ -1,15 +1,12 @@
-from flask import Flask
-from threading import Thread
+from discord.ext import commands
 
-app = Flask('')
+class Ping(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
 
-@app.route('/')
-def home():
-    return "I'm alive!"
+    @commands.command()
+    async def ping(self, ctx):
+        await ctx.send("Pong!")
 
-def run():
-    app.run(host='0.0.0.0', port=8080)
-
-def keep_alive():
-    t = Thread(target=run)
-    t.start() 
+async def setup(bot):
+    await bot.add_cog(Ping(bot)) 
