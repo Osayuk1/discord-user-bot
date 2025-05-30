@@ -1,16 +1,20 @@
 import os
 import discord
 from discord.ext import commands
-import keep_alive
+from keep_alive import start
 
-keep_alive.start()
+start()  # keep_alive for UptimeRobot
 
-intents = discord.Intents.default()
+intents = discord.Intents.all()
+
 bot = commands.Bot(command_prefix="!", self_bot=True, intents=intents)
+
+@bot.event
+async def on_ready():
+    print(f"Logged in as {bot.user}")
 
 @bot.command()
 async def ping(ctx):
-    await ctx.send("Pong!")
+    await ctx.reply("Pong!")
 
-TOKEN = os.getenv("TOKEN")
-bot.run(TOKEN)
+bot.run(os.getenv("TOKEN"))
